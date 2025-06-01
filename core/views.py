@@ -3,13 +3,18 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import connection
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.template.loader import render_to_string
-from .models import Student, Benefit, Room
+from .models import Student, Benefit, Room, Schedule, Employee
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
-import os
+import os, random, string
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
 
 @login_required(login_url='login')
 def home(request):
@@ -127,3 +132,84 @@ def create_student_ajax(request):
         'username': username,
         'password': password,
     })
+def employee_form_view(request):
+    schedules = Schedule.objects.all()
+    return render(request, 'employee_form_partial.html', {'schedules': schedules})
+    
+
+def generate_random_password(length=10):
+    chars = string.ascii_letters + string.digits
+    return ''.join(random.choices(chars, k=length))
+
+import os
+from django.contrib.auth import get_user_model
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from .models import Employee, Schedule
+
+User = get_user_model()
+
+def generate_random_password(length=8):
+    import string, random
+    chars = string.ascii_letters + string.digits
+    return ''.join(random.choice(chars) for _ in range(length))
+
+@require_POST
+def create_employee_ajax(request):
+    first_name = request.POST.get('first_name', '').strip()
+    last_name = request.POST.get('last_name', '').strip()
+    email = request.POST.get('email', '').strip()
+    contact_number = request.POST.get('contact_number', '').strip()
+    specialty = request.POST.get('specialty', '').strip()
+    schedule_id = request.POST.get('schedule_id')
+
+    if not all([first_name, last_name, email, specialty, schedule_id]):
+        return JsonResponse({'success': False, 'error': 'Все поля обязательны'})
+
+    try:
+        schedule = Schedule.objects.get(pk=schedule_id)
+    except Schedule.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Неверный график'})
+
+    # Генерация уникального логина
+    base_username = (first_name[0] + last_name).lower()
+    username = base_username
+    counter = 1
+    while User.objects.filter(username=username).exists():
+        username = f"{base_username}{counter}"
+        counter += 1
+
+    password = generate_random_password()
+
+    try:
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            role='employee'
+        )
+        user.save()
+
+        employee = Employee.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            contact_number=contact_number,
+            specialty=specialty,
+            schedule=schedule,
+            user=user,
+        )
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Ошибка создания пользователя: {str(e)}'})
+
+    # Запись в файл
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(BASE_DIR, 'created_employees.txt')
+    with open(file_path, 'a', encoding='utf-8') as f:
+        f.write(f'{last_name} {first_name}\n')
+        f.write(f'Username: {username}\n')
+        f.write(f'Password: {password}\n\n')
+
+    return JsonResponse({'success': True, 'username': username, 'password': password})

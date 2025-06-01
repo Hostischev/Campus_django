@@ -107,6 +107,10 @@ class Schedule(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
 
+    class Meta:
+        managed = False  # Django не будет изменять таблицу
+        db_table = 'schedule'
+
     def __str__(self):
         return f"Schedule {self.schedule_id}"
 
@@ -116,18 +120,33 @@ class Employee(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.CharField(max_length=100, unique=True)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
+    schedule = models.ForeignKey(
+        Schedule, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
     contact_number = models.CharField(
         max_length=15, unique=True, blank=True, null=True,
-        validators=[RegexValidator(r'^\+?\d{7,15}$', 'Contact number must be between 7 and 15 digits, optional leading +')]
+        validators=[RegexValidator(
+            r'^\+?\d{7,15}$', 
+            'Contact number must be between 7 and 15 digits, optional leading +'
+        )]
     )
     specialty = models.CharField(max_length=100, blank=True, null=True)
 
+    class Meta:
+        managed = False  # Django не будет изменять таблицу
+        db_table = 'employee'
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
-    class Meta:
-        db_table = 'employee'
 
 
 class Payment(models.Model):

@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from core import views 
 from django.contrib.auth import views as auth_views
-from core.views import profile, home, get_free_rooms, create_student_ajax
+from core.views import profile, home, get_free_rooms, create_student_ajax, employee_form_view
 
 
 
@@ -33,6 +33,8 @@ urlpatterns = [
     path('student/form/', views.load_student_form, name='load_student_form'),
     path('get_free_rooms', get_free_rooms, name='get_free_rooms'),
     path('create_student_ajax/', create_student_ajax, name='create_student_ajax'),
+    path('create-employee/', views.create_employee_ajax, name='create_employee_ajax'),
+    path('employee-form/', views.employee_form_view, name='employee_form'),
 
 ]
 

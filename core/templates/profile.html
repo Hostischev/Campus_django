@@ -24,7 +24,7 @@
   
   
   <div class="button-bar">
-    <button id="btnMaster">Добавить мастера</button>
+    <button id="btnMaster" data-url="{% url 'employee_form' %}" data-submit-url="{% url 'create_employee_ajax' %}">Добавить мастера</button>
     <button id="btnStudent" data-url="{% url 'load_student_form' %}">Добавить жильца</button>
   </div>
   
@@ -36,6 +36,7 @@
     
   {% endif %} 
 <script src="{% static 'profile/js/formStudent.js' %}"></script>
+<script src="{% static 'profile/js/formEmployee.js' %}"></script>
 
 </body>
 </html>

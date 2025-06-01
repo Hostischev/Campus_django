@@ -186,3 +186,19 @@ document.addEventListener('DOMContentLoaded', () => {
     attachStudentFormHandlers();
   });
 });
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('btnMaster');
+  btn?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const container = document.getElementById('form-room-wrapper');
+    const formContainer = document.getElementById('employeeFormContainer');
+
+    container.style.display = container.style.display === 'flex' ? 'none' : 'flex';
+
+    const url = btn.dataset.url;
+    const res = await fetch(url);
+    formContainer.innerHTML = await res.text();
+
+    attachStudentFormHandlers();
+  });
+});

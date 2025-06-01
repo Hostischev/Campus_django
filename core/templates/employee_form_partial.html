@@ -1,0 +1,36 @@
+<form id="employeeForm" action="{% url 'employee_form' %}" class="profile-form" method="post">
+    {% csrf_token %}
+    <label>Имя:</label>
+    <input type="text" name="first_name" required><br>
+
+    <label>Фамилия:</label>
+    <input type="text" name="last_name" required><br>
+
+    <label>Email:</label>
+    <input type="email" name="email" required><br>
+
+    <label>Номер телефона:</label>
+    <input type="text" name="contact_number" pattern="^\+?\d{7,15}$" required><br>
+
+    <label>Специализация:</label>
+    <select name="specialty" required>
+        <option value="">Выберите специализацию</option>
+        <option>Carpenter</option>
+        <option>Plumber</option>
+        <option>Electrician</option>
+        <option>Administrator</option>
+    </select><br>
+
+    <label>График работы:</label>
+    <select name="schedule_id" required>
+        {% for schedule in schedules %}
+            <option value="{{ schedule.schedule_id }}">
+                {{ schedule.work_days }} ({{ schedule.start_time }} - {{ schedule.end_time }})
+            </option>
+        {% endfor %}
+    </select><br>
+
+    <button type="submit" id="showRoomsBtn">Сохранить мастера</button>
+</form>
+
+<div id="result"></div>
