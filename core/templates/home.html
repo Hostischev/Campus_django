@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Главная страница</title>
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Добро пожаловать на главную страницу!</h1>
+        </header>
+
+        <nav>
+            {% if user.is_authenticated %}
+                <p>Привет, <strong>{{ user.username }}</strong>!</p>
+                <ul>
+                    <li><a href="{% url 'profile' %}">Профиль</a></li>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit">Выйти</button>
+                    </form>
+                      
+                </ul>
+            {% else %}
+                <p><a href="{% url 'login' %}">Войти</a></p>
+            {% endif %}
+        </nav>
+    </div>
+</body>
+</html>

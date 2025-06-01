@@ -1,0 +1,31 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f2f5;
+}
+table {
+    width: 70%;
+    margin: 40px auto;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+th, td {
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+th {
+    background-color: #3498db;
+    color: white;
+}
+.seat {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    margin: 2px;
+    border-radius: 4px;
+}
+.free { background-color: #2ecc71; }
+.occupied { background-color: #bdc3c7; }

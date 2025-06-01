@@ -1,0 +1,64 @@
+<form id="studentForm" action="{% url 'create_student_ajax' %}" method="post">
+  {% csrf_token %}
+
+  <div>
+    <label for="first_name">Имя:</label><br>
+    <input type="text" id="first_name" name="first_name" required>
+    <div class="error-message" style="color:red; font-size: 0.9em;"></div>
+  </div>
+
+  <div>
+    <label for="last_name">Фамилия:</label><br>
+    <input type="text" id="last_name" name="last_name" required>
+    <div class="error-message" style="color:red; font-size: 0.9em;"></div>
+  </div>
+
+  <div>
+    <label for="group_name">Группа:</label><br>
+    <input type="text" id="group_name" maxlength="1" name="group_name" required>
+    <div class="error-message" style="color:red; font-size: 0.9em;"></div>
+  </div>
+
+  <div>
+    <label for="birth_date">Дата рождения:</label><br>
+    <input type="date" id="birth_date" name="birth_date" required>
+    <div class="error-message" style="color:red; font-size: 0.9em;"></div>
+  </div>
+
+  <div>
+    <label for="contact_number">Телефон:</label><br>
+    <input type="text" id="contact_number" name="contact_number" pattern="068[0-9]{7}" required>
+    <div class="error-message" style="color:red; font-size: 0.9em;"></div>
+  </div>
+
+  <div>
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required>
+    <div class="error-message" style="color:red; font-size: 0.9em;"></div>
+  </div>
+
+  <div>
+    <label for="benefit">Льгота:</label><br>
+    <select id="benefit" name="benefit">
+      <option value="">Выберите льготу</option>
+      {% for benefit in benefits %}
+          <option value="{{ benefit.pk }}">{{ benefit.benefitname }}</option>
+      {% endfor %}
+    </select>
+    <div class="error-message" style="color:red; font-size: 0.9em;"></div>
+  </div>
+
+  <div>
+    <label for="gender">Пол:</label><br>
+    <select name="gender" id="gender" required>
+        <option value="">Выберите пол</option>
+        <option value="male">Мужской</option>
+        <option value="female">Женский</option>
+    </select>
+    <div class="error-message" style="color:red; font-size: 0.9em;"></div>
+  </div>
+
+  <button type="button" id="showRoomsBtn">Присвоить комнату</button>
+
+  
+</form>

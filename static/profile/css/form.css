@@ -1,0 +1,200 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+body{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.container.profile {
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 20px 24px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+  }
+  
+  .container.profile h1 {
+    font-size: 22px;
+    margin-bottom: 16px;
+    color: #2c3e50;
+  }
+  
+  .container.profile p {
+    font-size: 14px;
+    margin: 6px 0;
+  }
+  
+  .container.profile strong {
+    color: #555;
+  }
+  
+  .container.profile form {
+    margin-top: 16px;
+  }
+  
+  .container.profile button {
+    padding: 8px 14px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .container.profile button:hover {
+    background-color: #c0392b;
+  }
+  
+  .container.profile a {
+    display: inline-block;
+    margin-top: 14px;
+    color: #3498db;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+  
+  .container.profile a:hover {
+    color: #217dbb;
+  }
+  
+#studentFormContainer {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  #studentFormContainer form > div {
+    margin-bottom: 10px;
+  }
+  
+  #studentFormContainer label {
+    display: block;
+    font-weight: 600;
+     /* Меньше отступ под лейблом */
+    color: #333;
+    font-size: 14px;
+  }
+  
+  #studentFormContainer input[type="text"],
+  #studentFormContainer input[type="date"],
+  #studentFormContainer input[type="email"],
+  #studentFormContainer select {
+    width: 100%;
+    padding: 8px 10px; /* Меньше вертикальный паддинг */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 13px;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  #studentFormContainer input[type="text"]:focus,
+  #studentFormContainer input[type="date"]:focus,
+  #studentFormContainer input[type="email"]:focus,
+  #studentFormContainer select:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
+    outline: none;
+  }
+  
+  #studentFormContainer .error-message {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 3px;
+  }
+  
+  #studentFormContainer button {
+    padding: 8px 14px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  #studentFormContainer button:hover {
+    background-color: #45a049;
+  }
+  .container.profile {
+    max-width: 100%;
+    margin-bottom: 20px;
+    padding: 20px 24px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  }
+  
+  .button-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .button-bar button {
+    padding: 8px 14px;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .button-bar button:hover {
+    background-color: #1c598a;
+  }
+  
+  .form-room-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  #studentFormContainer,
+  #roomsContainer {
+    flex: 1 1 48%;
+    background-color: #f9f9f9;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    min-height: 100px;
+  }
+  .button-bar-options {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .button-bar-options button {
+    padding: 8px 14px;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .button-bar-options button:hover {
+    background-color: #1c598a;
+  }  
+  #createStudentBtn{
+    margin-top: 10px;
+  }

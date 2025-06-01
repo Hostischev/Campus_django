@@ -1,0 +1,15 @@
+{% load static %}
+<html>
+<head>
+    <title>Создание студента</title>
+    <script src="{% static 'forms.js' %}"></script>
+</head>
+<body>
+    <h2>Добавить студента</h2>
+    <form method="post" id="student-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Создать</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Профиль пользователя</title>
+  <link rel="stylesheet" href="{% static 'profile/css/form.css' %}" />
+  <script src="{% static 'validation_rooms.js' %}" defer></script>
+</head>
+<body>
+  <div class="container profile">
+    <h1>Профиль пользователя</h1>
+    <p><strong>Имя:</strong> {{ user.first_name }}</p>
+    <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Логин:</strong> {{ user.username }}</p>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit">Выйти</button>
+    </form>
+  </div>
+  {% if request.user.is_authenticated and request.user.role == 'administrator'  %}
+
+  
+  
+  <div class="button-bar">
+    <button id="btnMaster">Добавить мастера</button>
+    <button id="btnStudent" data-url="{% url 'load_student_form' %}">Добавить жильца</button>
+  </div>
+  
+  <div class="form-room-wrapper" id="form-room-wrapper" style="display: none;">
+    <div id="studentFormContainer"></div>
+    <div id="emloyeeformContainer"></div>
+    <div id="roomsContainer"></div>
+  </div>
+    
+  {% endif %} 
+<script src="{% static 'profile/js/formStudent.js' %}"></script>
+
+</body>
+</html>
