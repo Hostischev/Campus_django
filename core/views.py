@@ -3,14 +3,16 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import connection
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.template.loader import render_to_string
-from .models import Student, Benefit, Room, Schedule, Employee
+from .models import Student, Benefit, Room, Schedule, Employee, RepairRequest, RepairRequestHistory
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
-import os, random, string
+import os, random, string, json
+from django.utils.decorators import method_decorator
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -49,6 +51,8 @@ def get_free_rooms(request):
         return JsonResponse({'error': 'Invalid gender parameter'}, status=400)
 
     table = 'free_male_rooms' if gender == 'male' else 'free_female_rooms'
+
+    
 
     with connection.cursor() as cursor:
         cursor.execute(f"""
@@ -213,3 +217,100 @@ def create_employee_ajax(request):
         f.write(f'Password: {password}\n\n')
 
     return JsonResponse({'success': True, 'username': username, 'password': password})
+
+def request_list(request):
+    sort_by = request.GET.get('sort_by', 'request_date')
+    order = request.GET.get('order', 'desc')
+    status_filter = request.GET.get('status')
+
+    sort_field = '-' + sort_by if order == 'desc' else sort_by
+
+    requests = RepairRequest.objects.all()
+    if status_filter in ['New', 'Completed']:
+        requests = requests.filter(request_status=status_filter)
+    requests = requests.order_by(sort_field)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        html = render_to_string('repair_requests/request_table_body.html', {
+            'requests': requests,
+        })
+        return JsonResponse({'html': html})
+
+    return render(request, 'repair_requests/request_list.html', {
+        'requests': requests,
+        'current_sort': sort_by,
+        'current_order': order,
+        'current_status': status_filter,
+    })
+@csrf_exempt
+@login_required
+def update_repair_request(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            req = RepairRequest.objects.get(request_id=data['request_id'])
+
+            # Получение текущего сотрудника
+            employee = Employee.objects.get(user=request.user)
+
+            # Сохраняем старые значения
+            old_description = req.issue_description
+            old_notes = req.completion_notes
+            old_status = req.request_status
+            old_cost = req.work_cost
+
+            # Обновляем заявку
+            req.issue_description = data['problem']
+            req.completion_notes = data['note']
+            req.request_status = data['status']
+            req.work_cost = data['cost']
+            req.completion_date = timezone.now().date()
+            req.employee = employee
+            req.save()
+
+            # Сохраняем историю изменений
+            RepairRequestHistory.objects.create(
+                repair_request=req,
+                changed_by=employee,
+                old_description=old_description,
+                new_description=req.issue_description,
+                old_notes=old_notes,
+                new_notes=req.completion_notes,
+                old_status=old_status,
+                new_status=req.request_status,
+                old_cost=old_cost,
+                new_cost=req.work_cost
+            )
+
+            return JsonResponse({'success': True})
+        except RepairRequest.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Заявка не найдена'})
+        except Employee.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Сотрудник не найден'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Неверный метод запроса'})
+def get_employee_info(request, employee_id):
+    try:
+        employee = Employee.objects.get(employee_id=employee_id)
+        full_name = f"{employee.first_name} {employee.last_name}"
+        return JsonResponse({'name': full_name})
+    except Employee.DoesNotExist:
+        return JsonResponse({'name': 'Неизвестно'}, status=404)
+@login_required
+def get_repair_history(request, request_id):
+    try:
+        history = RepairRequestHistory.objects.filter(repair_request_id=request_id).select_related('changed_by').order_by('-change_date')
+        history_list = [
+            {
+                'date': h.change_date.strftime("%Y-%m-%d %H:%M"),
+                'employee': str(h.changed_by),
+                'description': f"{h.old_description} → {h.new_description}",
+                'status': f"{h.old_status} → {h.new_status}",
+                'cost': f"{h.old_cost} → {h.new_cost}"
+            } for h in history
+        ]
+        return JsonResponse({'success': True, 'history': history_list})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

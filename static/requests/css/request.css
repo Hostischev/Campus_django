@@ -1,0 +1,327 @@
+/* request.css */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f7fa;
+  color: #333;
+  padding: 1.25rem;
+}
+
+h2 {
+  margin-bottom: 1.25rem;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+/* Контейнер для фильтра */
+#filterForm {
+  max-width: 100%;
+  margin-bottom: 1.25rem;
+  background-color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 0.625rem;
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+}
+
+#filterForm label {
+  font-weight: 600;
+  color: #555;
+}
+
+#filterForm select {
+  padding: 0.375rem 0.625rem;
+  border: 1px solid #ccc;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+#filterForm select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0.3125rem rgba(74, 144, 226, 0.3);
+}
+
+/* Таблица */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 0.625rem;
+  overflow: hidden;
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.08);
+  table-layout: auto;
+}
+
+thead {
+  background-color: #2980b9;
+  color: white;
+}
+
+thead th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  user-select: none;
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tbody td {
+  padding: 0.625rem 1rem;
+  vertical-align: middle;
+  font-size: 0.875rem;
+  color: #444;
+  word-break: break-word;
+}
+
+/* Широкие колонки: Описание (5) и Примечание (8) */
+td:nth-child(5),
+th:nth-child(5),
+td:nth-child(8),
+th:nth-child(8) {
+  width: auto;
+  min-width: 20%;
+}
+
+/* Статус — пошире и nowrap */
+td:nth-child(7),
+th:nth-child(7) {
+  font-weight: 600;
+  min-width: 10rem;
+  white-space: nowrap;
+}
+
+td:nth-child(7)[data-status="New"] {
+  color: #27ae60;
+}
+
+td:nth-child(7)[data-status="Completed"] {
+  color: #95a5a6;
+}
+
+/* Ссылки сортировки */
+.sort-link {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.sort-link:hover {
+  text-decoration: underline;
+}
+
+/* Мобильная адаптивность */
+@media (max-width: 48rem) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead tr {
+    display: none;
+  }
+
+  tbody tr {
+    margin-bottom: 0.9375rem;
+    background-color: #fff;
+    padding: 0.625rem;
+    border-radius: 0.625rem;
+    box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.05);
+  }
+
+  tbody td {
+    padding: 0.5rem 0.625rem;
+    text-align: right;
+    position: relative;
+    padding-left: 50%;
+    font-size: 0.8125rem;
+  }
+
+  tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 1rem;
+    top: 0.625rem;
+    font-weight: 600;
+    color: #555;
+    text-align: left;
+    white-space: nowrap;
+  }
+}
+
+/* Модальное окно - фон */
+.modal {
+  position: fixed;
+  z-index: 1000; /* поверх всего */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* полупрозрачный фон */
+  display: flex; /* по умолчанию показываем модалку с флексом */
+  justify-content: center;
+  align-items: center;
+  visibility: hidden; /* скрыть через видимость */
+  opacity: 0;         /* прозрачность для плавного исчезания */
+  pointer-events: none; /* чтобы клики не проходили, когда скрыто */
+  transition: visibility 0s 0.3s, opacity 0.3s ease; /* задержка visibility для плавного скрытия */
+}
+
+.modal.show {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto; /* включаем клики, когда модалка видна */
+  transition-delay: 0s; /* убираем задержку, чтобы сразу показывалась */
+}
+
+/* Содержимое модалки */
+.modal-content {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Кнопка закрытия */
+.modal-content .close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #666;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.modal-content .close:hover {
+  color: #000;
+}
+
+/* Заголовок */
+.modal-content h3 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+/* Метки */
+.modal-content label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #444;
+}
+
+/* Поля */
+.modal-content textarea,
+.modal-content select,
+.modal-content input[type="text"],
+.modal-content input[type="hidden"] {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 18px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+  font-family: inherit;
+  color: #333;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.modal-content textarea:focus,
+.modal-content select:focus,
+.modal-content input[type="text"]:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
+}
+
+/* Кнопка */
+.modal-content button[type="submit"] {
+  background-color: #2980b9;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-content button[type="submit"]:hover {
+  background-color: #1c5980;
+}
+/* --- Добавлено для стоимости --- */
+#editModal label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #444;
+}
+
+#editModal input[type="number"] {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  margin-top: 4px;
+  margin-bottom: 18px;
+  font-family: inherit;
+  color: #333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#editModal input[type="number"]:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
+  outline: none;
+}

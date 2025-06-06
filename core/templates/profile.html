@@ -19,13 +19,28 @@
       <button type="submit">Выйти</button>
     </form>
   </div>
-  {% if request.user.is_authenticated and request.user.role == 'administrator'  %}
+  
 
   
   
   <div class="button-bar">
+    {% if request.user.is_authenticated and request.user.role == 'administrator' %}
     <button id="btnMaster" data-url="{% url 'employee_form' %}" data-submit-url="{% url 'create_employee_ajax' %}">Добавить мастера</button>
     <button id="btnStudent" data-url="{% url 'load_student_form' %}">Добавить жильца</button>
+  {% endif %}
+  
+  {% if request.user.is_authenticated %}
+    {% if request.user.role == 'administrator' or request.user.role == 'employee' %}
+    <button id="btnRequest" onclick="location.href='{% url 'request_list' %}'">Заявки</button>
+    {% endif %}
+  {% endif %}
+
+  {% if request.user.is_authenticated %}
+    {% if request.user.role == 'student' %}
+    <button id="btnRepair" >Оставить заявку</button>
+    {% endif %}
+  {% endif %}
+  
   </div>
   
   <div class="form-room-wrapper" id="form-room-wrapper" style="display: none;">
@@ -34,7 +49,7 @@
     <div id="roomsContainer"></div>
   </div>
     
-  {% endif %} 
+  
 <script src="{% static 'profile/js/formStudent.js' %}"></script>
 <script src="{% static 'profile/js/formEmployee.js' %}"></script>
 

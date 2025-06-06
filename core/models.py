@@ -37,6 +37,7 @@ class Room(models.Model):
   # Добавлено поле gender
     class Meta:
         db_table = 'room'
+        managed = False
     def __str__(self):
         return f"Room {self.room_number}"
 
@@ -160,13 +161,27 @@ class Payment(models.Model):
 
 
 class RepairRequest(models.Model):
+    STATUS_CHOICES = [
+        ('New', 'New'),
+        ('Completed', 'Completed'),
+    ]
+
     request_id = models.AutoField(primary_key=True)
     student = models.ForeignKey(Student, models.CASCADE, db_column='student_id')
     room = models.ForeignKey(Room, models.PROTECT, db_column='room_id')
-    employee = models.ForeignKey(Employee, models.PROTECT, db_column='employee_id')
+    employee = models.ForeignKey(Employee, null=True, blank=True, on_delete=models.SET_NULL)
     issue_description = models.TextField()
     request_date = models.DateField()
-    request_status = models.CharField(max_length=50)
+    request_status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+
+    # New fields (already present in the database)
+    completion_date = models.DateField(null=True, blank=True)
+    completion_notes = models.TextField(null=True, blank=True)
+    work_cost = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        managed = False
+        db_table = 'repairrequest'
 
     def __str__(self):
         return f"RepairRequest {self.request_id} - {self.request_status}"
@@ -197,3 +212,22 @@ class SettlementRequest(models.Model):
 
     def __str__(self):
         return f"SettlementRequest {self.request_id} - {self.status}"
+class RepairRequestHistory(models.Model):
+    history_id = models.AutoField(primary_key=True)
+    repair_request = models.ForeignKey(
+    RepairRequest,
+    on_delete=models.CASCADE,
+    related_name='histories',)
+    changed_by = models.ForeignKey('Employee', null=True, on_delete=models.SET_NULL)
+    change_date = models.DateTimeField(auto_now_add=True)
+    old_description = models.TextField(blank=True, null=True)
+    new_description = models.TextField(blank=True, null=True)
+    old_notes = models.TextField(blank=True, null=True)
+    new_notes = models.TextField(blank=True, null=True)
+    old_status = models.CharField(max_length=50)
+    new_status = models.CharField(max_length=50)
+    old_cost = models.IntegerField(blank=True, null=True)
+    new_cost = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'repairrequesthistory'

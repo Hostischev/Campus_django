@@ -1,0 +1,19 @@
+{% for request in requests %}
+<tr class="request-row"
+    data-id="{{ request.request_id }}"
+    data-description="{{ request.issue_description|escapejs }}"
+    data-note="{{ request.completion_notes|default:''|escapejs }}"
+    data-status="{{ request.request_status }}"
+    data-cost="{{ request.work_cost|default_if_none:'0' }}"
+    data-employee-id="{{ request.employee.employee_id|default:'' }}">
+    <td>{{ request.room.room_number }}</td>
+    <td>{{ request.issue_description }}</td>
+    <td>{{ request.request_date }}</td>
+    <td>{{ request.completion_date|default:"—" }}</td>
+    <td>{{ request.completion_notes|default:"—" }}</td>
+    <td>{{ request.work_cost|default_if_none:"—" }}</td>
+    <td>{{ request.request_status }}</td>
+</tr>
+{% empty %}
+<tr><td colspan="7">Заявки не найдены.</td></tr>
+{% endfor %}
