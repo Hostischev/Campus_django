@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import connection
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.template.loader import render_to_string
-from .models import Student, Benefit, Room, Schedule, Employee, RepairRequest, RepairRequestHistory
+from .models import Student, Benefit, Room, Schedule, Employee, RepairRequest, RepairRequestHistory, SettlementRequest, Payment
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
@@ -13,6 +13,7 @@ import os, random, string, json
 from django.utils.decorators import method_decorator
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.utils.timezone import now
 
 User = get_user_model()
 
@@ -314,3 +315,148 @@ def get_repair_history(request, request_id):
         return JsonResponse({'success': True, 'history': history_list})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
+@csrf_exempt
+def create_repair_request(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        try:
+            data = json.loads(request.body)
+            full_name = data.get('full_name', '').strip()
+            phone = data.get('phone', '').strip()
+            issue_description = data.get('issue_description', '').strip()
+
+            # Проверяем отдельно каждое поле
+            if not full_name:
+                return JsonResponse({"success": False, "error": "Не указано имя"})
+            if not (phone.isdigit() and len(phone) == 10):
+                return JsonResponse({"success": False, "error": "Неверный номер телефона"})
+            if not issue_description:
+                return JsonResponse({"success": False, "error": "Описание проблемы пустое"})
+
+            student = request.user.student
+            room = student.room
+            room_number = getattr(room, 'room_number', None)
+
+            # Формируем полный текст проблемы
+            full_issue_description = f"{issue_description}  Номер телефона: {phone}  ФИО: {full_name}"
+
+            repair_request = RepairRequest.objects.create(
+                student=student,
+                room=room,
+                room_number=room_number,
+                issue_description=full_issue_description,
+                request_date=timezone.now().date(),
+                request_status='New',
+                work_cost=0,
+            )
+
+            return JsonResponse({"success": True, "request_id": repair_request.request_id})
+
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+
+    return JsonResponse({"success": False, "error": "Invalid request or not authenticated"})
+@login_required
+def get_logged_student_info(request):
+    try:
+        student = Student.objects.select_related('room').get(user=request.user)
+
+        student_data = {
+            'first_name': student.first_name,
+            'last_name': student.last_name,
+            'room_number': student.room.room_number if student.room else '—',
+            'birth_date': student.birth_date.strftime('%Y-%m-%d') if student.birth_date else '—',
+            'group_name': student.group_name,
+            'contact_number': student.contact_number or '—',
+            'email': student.email or '—',
+            'payment_status': student.payment_status if student.payment_status is not None else 0,
+            'benefit': student.benefit or 'Нет',
+            'gender': student.gender or '—',
+        }
+
+        # Заявки на ремонт
+        repair_requests = RepairRequest.objects.filter(student=student).order_by('-request_date')
+        repair_list = []
+        for r in repair_requests:
+            status_display = 'In Progress' if r.request_status == 'New' else 'Completed'
+            repair_list.append({
+                'issue_description': r.issue_description,
+                'request_date': r.request_date.strftime('%Y-%m-%d'),
+                'request_status': status_display,
+            })
+
+        # Заявки на переселение
+        resettlement_requests = SettlementRequest.objects.filter(
+            resident=student,
+            request_type='resettlement'
+        ).order_by('-settlement_date')
+
+        resettlement_list = []
+        for req in resettlement_requests:
+            resettlement_list.append({
+                'room_number': req.room.room_number,
+                'settlement_date': req.settlement_date.strftime('%Y-%m-%d'),
+                'status': req.status or '—',
+            })
+        payments = Payment.objects.filter(student=student).order_by('-payment_date')
+        payment_list = [{
+            'amount': str(p.payment_amount),
+            'date': p.payment_date.strftime('%Y-%m-%d')
+        } for p in payments]
+
+        return JsonResponse({
+            'status': 'success',
+            'data': student_data,
+            'repairs': repair_list,
+            'resettlements': resettlement_list,
+            'payments': payment_list,
+        })
+
+    except Student.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Студент не найден'})
+def payment_info(request):
+    return render(request, 'payment_info.html')
+@login_required
+def get_user_gender(request):
+    try:
+        student = Student.objects.select_related('room').get(user=request.user)
+
+        gender = student.gender
+        if not gender:
+            return JsonResponse({'error': 'Пол не указан'}, status=404)
+
+        return JsonResponse({'gender': gender})
+    except Student.DoesNotExist:
+        return JsonResponse({'error': 'Студент не найден'}, status=404)
+
+
+
+@login_required
+@require_POST
+def submit_resettlement_request(request):
+    try:
+        data = json.loads(request.body)
+        room_id = data.get('room_id')
+
+        if not room_id:
+            return JsonResponse({'message': 'Комната не указана'}, status=400)
+
+        student = Student.objects.filter(user=request.user).first()
+        if not student:
+            return JsonResponse({'message': 'Студент не найден'}, status=400)
+
+        room = Room.objects.get(pk=room_id)
+
+        SettlementRequest.objects.create(
+            resident=student,
+            room=room,
+            settlement_date=now().date(),
+            status='In Progress',
+            request_type='resettlement'
+        )
+
+        return JsonResponse({'message': 'Заявка успешно отправлена'})
+    except Room.DoesNotExist:
+        return JsonResponse({'message': 'Комната не найдена'}, status=400)
+    except Exception as e:
+        return JsonResponse({'message': f'Ошибка: {str(e)}'}, status=500)

@@ -39,7 +39,11 @@ urlpatterns = [
     path('api/requests/edit/', update_repair_request, name='update_repair_request'),
     path('api/employees/<int:employee_id>/', views.get_employee_info, name='get_employee_info'),
     path('repair/history/<int:request_id>/', views.get_repair_history, name='repair_history'),
-
+    path('api/repair/create/', views.create_repair_request, name='create_repair_request'),
+    path('student/info/', views.get_logged_student_info, name='get_logged_student_info'),
+    path('payment/', views.payment_info, name='payment_info'),
+    path('get_user_gender/', views.get_user_gender),
+    path('submit_resettlement_request/', views.submit_resettlement_request),
 
     
 ]

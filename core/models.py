@@ -43,55 +43,55 @@ class Room(models.Model):
 
 
 class Student(models.Model):
-    student_id = models.AutoField(primary_key=True)
-    room = models.ForeignKey('Room', models.DO_NOTHING, db_column='room_id')
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    group_name = models.CharField(max_length=20)
-    birth_date = models.DateField(null=True, blank=True)
-    contact_number = models.CharField(unique=True, max_length=15, blank=True, null=True)
-    email = models.CharField(unique=True, max_length=100, blank=True, null=True)
-    payment_status = models.IntegerField(blank=True, null=True, default=0)
-    benefit = models.TextField(blank=True, null=True)
-    gender = models.CharField(max_length=10, blank=True, null=True)
-    user = models.OneToOneField('core.User', on_delete=models.CASCADE, db_column='user_id', blank=True, null=True)
+        student_id = models.AutoField(primary_key=True)
+        room = models.ForeignKey('Room', models.DO_NOTHING, db_column='room_id')
+        first_name = models.CharField(max_length=50)
+        last_name = models.CharField(max_length=50)
+        group_name = models.CharField(max_length=20)
+        birth_date = models.DateField(null=True, blank=True)
+        contact_number = models.CharField(unique=True, max_length=15, blank=True, null=True)
+        email = models.CharField(unique=True, max_length=100, blank=True, null=True)
+        payment_status = models.IntegerField(blank=True, null=True, default=0)
+        benefit = models.TextField(blank=True, null=True)
+        gender = models.CharField(max_length=10, blank=True, null=True)
+        user = models.OneToOneField('core.User', on_delete=models.CASCADE, db_column='user_id', blank=True, null=True)
 
-    class Meta:
-        managed = False
-        db_table = 'student'
+        class Meta:
+            managed = False
+            db_table = 'student'
 
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        def __str__(self):
+            return f"{self.first_name} {self.last_name}"
 
-    def save(self, *args, **kwargs):
-        if not self.user:
-            password = get_random_string(length=10)
-            username = f"{self.first_name.lower()}.{self.last_name.lower()}.{get_random_string(4)}"
-            user = User.objects.create_user(
-                username=username,
-                email=self.email,
-                password=password,
-                role='student',
-                first_name=self.first_name,
-                last_name=self.last_name
-            )
-            self.user = user
+        def save(self, *args, **kwargs):
+            if not self.user:
+                password = get_random_string(length=10)
+                username = f"{self.first_name.lower()}.{self.last_name.lower()}.{get_random_string(4)}"
+                user = User.objects.create_user(
+                    username=username,
+                    email=self.email,
+                    password=password,
+                    role='student',
+                    first_name=self.first_name,
+                    last_name=self.last_name
+                )
+                self.user = user
 
-            # Записываем логин и пароль в файл credentials.txt
-            credentials_path = os.path.join(settings.BASE_DIR, 'credentials.txt')
-            with open(credentials_path, 'a', encoding='utf-8') as f:
-                f.write(f"Student: {self.first_name} {self.last_name}\n")
-                f.write(f"Username: {username}\n")
-                f.write(f"Password: {password}\n")
-                f.write("=" * 40 + "\n")
+                # Записываем логин и пароль в файл credentials.txt
+                credentials_path = os.path.join(settings.BASE_DIR, 'credentials.txt')
+                with open(credentials_path, 'a', encoding='utf-8') as f:
+                    f.write(f"Student: {self.first_name} {self.last_name}\n")
+                    f.write(f"Username: {username}\n")
+                    f.write(f"Password: {password}\n")
+                    f.write("=" * 40 + "\n")
 
-            self._generated_password = password
+                self._generated_password = password
 
-        super().save(*args, **kwargs)
+            super().save(*args, **kwargs)
 
-    @property
-    def generated_password(self):
-        return getattr(self, '_generated_password', None)
+        @property
+        def generated_password(self):
+            return getattr(self, '_generated_password', None)
 
 
 class Benefit(models.Model):
@@ -152,12 +152,15 @@ class Employee(models.Model):
 
 class Payment(models.Model):
     payment_id = models.AutoField(primary_key=True)
-    student = models.ForeignKey(Student, models.CASCADE, db_column='student_id')
+    student = models.ForeignKey('Student', models.CASCADE, db_column='student_id')
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     payment_date = models.DateField()
 
     def __str__(self):
         return f"Payment {self.payment_id} for {self.student}"
+    class Meta:
+        managed = False
+        db_table = 'payment'
 
 
 class RepairRequest(models.Model):
@@ -167,13 +170,13 @@ class RepairRequest(models.Model):
     ]
 
     request_id = models.AutoField(primary_key=True)
-    student = models.ForeignKey(Student, models.CASCADE, db_column='student_id')
+    student = models.ForeignKey('Student', models.CASCADE, db_column='student_id')
     room = models.ForeignKey(Room, models.PROTECT, db_column='room_id')
     employee = models.ForeignKey(Employee, null=True, blank=True, on_delete=models.SET_NULL)
     issue_description = models.TextField()
     request_date = models.DateField()
     request_status = models.CharField(max_length=50, choices=STATUS_CHOICES)
-
+    room_number = models.IntegerField(null=True, blank=True)
     # New fields (already present in the database)
     completion_date = models.DateField(null=True, blank=True)
     completion_notes = models.TextField(null=True, blank=True)
@@ -212,6 +215,8 @@ class SettlementRequest(models.Model):
 
     def __str__(self):
         return f"SettlementRequest {self.request_id} - {self.status}"
+    class Meta:
+        db_table = 'settlementrequest'
 class RepairRequestHistory(models.Model):
     history_id = models.AutoField(primary_key=True)
     repair_request = models.ForeignKey(

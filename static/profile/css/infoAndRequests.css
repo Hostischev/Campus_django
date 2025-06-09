@@ -1,0 +1,126 @@
+/* Общий контейнер для форм */
+#repairFormContainer,
+#studentInfoFormContainer {
+  background-color: #fff;
+  padding: 1.25rem;
+  border-radius: 0.625rem;
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  display: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Заголовки в инфо */
+#studentInfoFormContainer h3,
+#studentInfoFormContainer h4 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+/* Список студента */
+#studentInfoFormContainer ul {
+  list-style-type: none;
+  margin-bottom: 1.5rem;
+}
+
+#studentInfoFormContainer ul li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+/* Форма ремонта */
+#repairRequestForm label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #444;
+}
+
+#repairRequestForm input[type="text"],
+#repairRequestForm textarea {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+  font-family: inherit;
+  color: #333;
+}
+
+#repairRequestForm textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+#repairRequestForm input:focus,
+#repairRequestForm textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.3);
+}
+
+#repairRequestForm button[type="submit"] {
+  padding: 0.625rem 1.25rem;
+  background-color: #2980b9;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#repairRequestForm button[type="submit"]:hover {
+  background-color: #1c5f91;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Таблицы в studentInfoFormContainer */
+#studentInfoFormContainer table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.06);
+}
+
+#studentInfoFormContainer thead {
+  background-color: #2980b9;
+  color: white;
+}
+
+#studentInfoFormContainer thead th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+#studentInfoFormContainer tbody td {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  color: #444;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+#studentInfoFormContainer tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}

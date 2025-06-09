@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <title>Профиль пользователя</title>
   <link rel="stylesheet" href="{% static 'profile/css/form.css' %}" />
+  <link rel="stylesheet" href="{% static 'profile/css/infoAndRequests.css' %}" />
   <script src="{% static 'validation_rooms.js' %}" defer></script>
 </head>
 <body>
@@ -37,7 +38,12 @@
 
   {% if request.user.is_authenticated %}
     {% if request.user.role == 'student' %}
-    <button id="btnRepair" >Оставить заявку</button>
+    <button id="btnRepair" >Оставить заявку на ремонт</button>
+    <button id="btnInfStudent" >Инфо</button>
+    <a href="{% url 'payment_info' %}">
+      <button id="btnPayment">Оплата</button>
+    </a>
+    <button id="btnSettlement" >Оставить заявку на переселение</button>
     {% endif %}
   {% endif %}
   
@@ -48,10 +54,18 @@
     <div id="emloyeeformContainer"></div>
     <div id="roomsContainer"></div>
   </div>
-    
+  <div id="repairFormContainer" style="display:none;"></div> 
+  <div id="resettlementFormContainer" style="display:none; margin-top: 1.5rem;"></div>
+  <div id="studentInfoFormContainer" style="display:none;"></div>
   
+
+
+
 <script src="{% static 'profile/js/formStudent.js' %}"></script>
 <script src="{% static 'profile/js/formEmployee.js' %}"></script>
+<script src="{% static 'profile/js/formStudentRequest.js' %}"></script>
+<script src="{% static 'profile/js/studentInfo.js' %}"></script>
+<script src="{% static 'profile/js/resettlementForm.js' %}"></script>
 
 </body>
 </html>
