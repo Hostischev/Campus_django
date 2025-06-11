@@ -1,7 +1,7 @@
 // Получаем контейнер с формой
 const formRoomWrapper = document.getElementById('form-room-wrapper');
 
-// Функция показа формы с загрузкой данных (твоя оригинальная логика)
+// Функция показа формы с загрузкой данных
 async function showSettlementForm() {
   formRoomWrapper.style.display = 'block';
 
@@ -11,6 +11,7 @@ async function showSettlementForm() {
   studentFormContainer.innerHTML = '';
 
   try {
+    // Получаем данные студента
     const res = await fetch('/student/info/');
     const data = await res.json();
 
@@ -26,17 +27,35 @@ async function showSettlementForm() {
       formRoomWrapper.style.display = 'none';
       return;
     }
-    const gender = genderRaw.toLowerCase();
 
+    const gender = genderRaw.toLowerCase();
+    const currentRoomNumber = data.data.room_number;
+
+    console.log('Студент:', data.data);
+
+    // Получаем свободные комнаты по полу
     const roomsRes = await fetch(`/get_free_rooms?gender=${gender}`);
     const roomsData = await roomsRes.json();
+
+    console.log('Комнаты:', roomsData.rooms);
 
     if (!roomsData.rooms || roomsData.rooms.length === 0) {
       roomsContainer.innerHTML = '<p>Свободных комнат нет</p>';
       return;
     }
 
-    roomsContainer.innerHTML = roomsData.rooms.map(r => `
+    // Исключаем комнату, в которой живёт студент (по номеру)
+    const filteredRooms = roomsData.rooms.filter(
+      r => r.room_number !== currentRoomNumber
+    );
+
+    if (filteredRooms.length === 0) {
+      roomsContainer.innerHTML = '<p>Свободных комнат нет (кроме вашей)</p>';
+      return;
+    }
+
+    // Рендерим кнопки комнат
+    roomsContainer.innerHTML = filteredRooms.map(r => `
       <div class="room-square" data-room-id="${r.room_id}" style="
         width: 50px; height: 50px; border-radius: 6px;
         background: #3498db; color: white; display: inline-flex;
@@ -44,13 +63,15 @@ async function showSettlementForm() {
       ">${r.room_number}</div>
     `).join('');
 
+    // Добавляем кнопку отправки
     roomsContainer.innerHTML += `
       <div style="margin-top: 10px;">
         <button id="submitSettlementBtn">Подать заявку</button>
       </div>
     `;
 
-    let selectedRoomId = null;
+    // Обработка выбора комнаты
+    selectedRoomId = null;
     document.querySelectorAll('.room-square').forEach(div => {
       div.addEventListener('click', () => {
         document.querySelectorAll('.room-square').forEach(d => d.style.border = 'none');
@@ -59,6 +80,7 @@ async function showSettlementForm() {
       });
     });
 
+    // Обработка отправки заявки
     document.getElementById('submitSettlementBtn').addEventListener('click', async () => {
       if (!selectedRoomId) {
         alert('Пожалуйста, выберите комнату');
@@ -109,7 +131,7 @@ function getCookie(name) {
   return cookieValue;
 }
 
-// Обработчик кликов по всем 4 кнопкам
+// Обработчики кнопок
 const btnRepair = document.getElementById('btnRepair');
 const btnInfStudent = document.getElementById('btnInfStudent');
 const btnPayment = document.getElementById('btnPayment');
@@ -117,26 +139,22 @@ const btnSettlement = document.getElementById('btnSettlement');
 
 const buttons = [btnRepair, btnInfStudent, btnPayment, btnSettlement];
 
-// Общий обработчик
 buttons.forEach(btn => {
-  if (!btn) return; // если кнопки нет в DOM (например, btnPayment в ссылке), пропускаем
+  if (!btn) return;
 
   btn.addEventListener('click', async (e) => {
-    e.preventDefault(); // если кнопка в ссылке, отменяем переход
+    e.preventDefault();
 
     if (btn.id === 'btnSettlement') {
-      // Если форма уже открыта - закрываем, иначе открываем и грузим данные
       if (formRoomWrapper.style.display === 'block') {
         formRoomWrapper.style.display = 'none';
       } else {
         await showSettlementForm();
       }
     } else {
-      // Для других кнопок — просто скрываем форму, если она была открыта
       if (formRoomWrapper.style.display === 'block') {
         formRoomWrapper.style.display = 'none';
       }
-      // Можно тут добавить логику для других кнопок, если нужно
     }
   });
 });
