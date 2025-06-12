@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from core import views 
 from django.contrib.auth import views as auth_views
-from core.views import profile, home, get_free_rooms, create_student_ajax, employee_form_view, update_repair_request
+from core.views import profile, home, get_free_rooms, create_student_ajax, employee_form_view, update_repair_request, update_request_status
 
 
 
@@ -44,6 +44,9 @@ urlpatterns = [
     path('payment/', views.payment_info, name='payment_info'),
     path('get_user_gender/', views.get_user_gender),
     path('submit_resettlement_request/', views.submit_resettlement_request),
+    path('api/resettlement-requests/', views.resettlement_requests_list, name='resettlement_requests_list'),
+    path('api/update-request-status/<int:request_id>/', update_request_status),
+    path('settlement-list/', views.settlement_list_page, name='settlement_list_page'),
 
     
 ]

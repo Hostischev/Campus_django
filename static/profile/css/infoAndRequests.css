@@ -64,24 +64,7 @@
   box-shadow: 0 0 6px rgba(74, 144, 226, 0.3);
 }
 
-#repairRequestForm button[type="submit"] {
-  padding: 0.625rem 1.25rem;
-  background-color: #2980b9;
-  color: #fff;
-  font-weight: bold;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
 
-#repairRequestForm button[type="submit"]:hover {
-  background-color: #1c5f91;
-}
-#roomsContainer button[type="submit"]:hover {
-  background-color: #1c5f91;
-}
 
 /* Анимация появления */
 @keyframes fadeIn {
@@ -126,26 +109,26 @@
 
 #studentInfoFormContainer tbody tr:nth-child(even) {
   background-color: #f9f9f9;
-}
-#submitSettlementBtn {
-  padding: 0.625rem 1.25rem;
-  background-color: #2980b9;
-  color: #fff;
-  font-weight: bold;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease, opacity 0.4s ease, transform 0.4s ease;
-  opacity: 0;
-  transform: translateY(10px);
-}
+  }
+  #submitSettlementBtn {
+    padding: 0.625rem 1.25rem;
+    background-color: #2980b9;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.4s ease, transform 0.4s ease;
+    opacity: 0;
+    transform: translateY(10px);
+  }
 
-#submitSettlementBtn:hover {
-  background-color: #1c5f91;
-}
+  #submitSettlementBtn:hover {
+    background-color: #1c5f91;
+  }
 
-.divSubmitSettlementBtn.show #submitSettlementBtn {
-  opacity: 1;
-  transform: translateY(0);
-}
+  .divSubmitSettlementBtn.show #submitSettlementBtn {
+    opacity: 1;
+    transform: translateY(0);
+  }

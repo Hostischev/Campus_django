@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Заявки на переселение</title>
+    <link rel="stylesheet" href="{% static 'settlementList.css' %}">
+</head>
+<body>
+    <div class="container settlement-list">
+        <h1>Заявки на переселение</h1>
+        <div id="settlementListContainer">Загрузка...</div>
+    </div>
+
+    <script src="{% static 'settlementListPage.js' %}"></script>
+</body>
+</html>

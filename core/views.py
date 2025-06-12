@@ -460,3 +460,109 @@ def submit_resettlement_request(request):
         return JsonResponse({'message': 'Комната не найдена'}, status=400)
     except Exception as e:
         return JsonResponse({'message': f'Ошибка: {str(e)}'}, status=500)
+def resettlement_requests_list(request):
+    requests = SettlementRequest.objects.filter(status='In Progress', request_type='resettlement')\
+        .select_related('resident__room', 'room')
+
+    data = []
+    for r in requests:
+        data.append({
+            'request_id': r.request_id,
+            'first_name': r.resident.first_name,
+            'last_name': r.resident.last_name,
+            'current_room': r.resident.room.room_number,
+            'desired_room': r.room.room_number,
+            'settlement_date': r.settlement_date.strftime('%Y-%m-%d')
+        })
+
+    return JsonResponse({'data': data})
+@csrf_exempt
+def update_request_status(request, request_id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid method'}, status=405)
+
+    try:
+        body = json.loads(request.body)
+        status = body.get('status')
+
+        if status not in ['Accepted', 'Rejected']:
+            return JsonResponse({'error': 'Invalid status'}, status=400)
+
+        req = SettlementRequest.objects.select_related('resident', 'room').get(pk=request_id)
+        student = req.resident
+
+        if status == 'Accepted':
+            # Меняем комнату студента на желаемую
+            student.room = req.room
+            student.save()
+
+        # Обновляем статус заявки
+        req.status = status
+        req.save()
+
+        return JsonResponse({'message': 'Status updated successfully'})
+
+    except SettlementRequest.DoesNotExist:
+        return JsonResponse({'error': 'Request not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+def settlement_list_page(request):
+    return render(request, 'settlementList.html') 
+def student_list_page(request):
+    return render(request, 'students_list.html')
+
+@require_GET
+def student_list_api(request):
+    q = request.GET.get('q', '').strip()
+    qs = Student.objects.order_by('-student_id')[:10] if not q else Student.objects.filter(
+        models.Q(last_name__icontains=q) |
+        models.Q(room__room_number__icontains=q) |
+        models.Q(contact_number__icontains=q)
+    )
+    data = [{
+        'student_id': s.student_id,
+        'first_name': s.first_name,
+        'last_name': s.last_name,
+        'room': s.room.room_number,
+        'balance': s.payment_status,
+        'contact': s.contact_number
+    } for s in qs]
+    return JsonResponse({'data': data})
+
+@require_GET
+def student_detail_api(request, sid):
+    s = get_object_or_404(Student, student_id=sid)
+    return JsonResponse({
+        'student_id': s.student_id,
+        'first_name': s.first_name,
+        'last_name': s.last_name,
+        'group_name': s.group_name,
+        'birth_date': s.birth_date.isoformat(),
+        'contact_number': s.contact_number,
+        'email': s.email,
+        'payment_status': s.payment_status,
+        'benefit': s.benefit,
+        'gender': s.gender,
+        'room': s.room.room_number,
+    })
+@require_POST
+def student_update_api(request, sid):
+    s = get_object_or_404(Student, student_id=sid)
+    data = json.loads(request.body)
+    if 'room_id' in data:
+        from .models import Room
+        s.room_id = data['room_id']
+    if 'payment_status' in data:
+        try:
+            s.payment_status = int(data['payment_status'])
+        except ValueError:
+            return HttpResponseBadRequest('payment_status must be integer')
+    s.save()
+    return JsonResponse({'ok': True})
+
+@require_POST
+def student_delete_api(request, sid):
+    s = get_object_or_404(Student, student_id=sid)
+    s.user.delete()
+    s.delete()
+    return JsonResponse({'ok': True})

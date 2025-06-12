@@ -1,0 +1,106 @@
+/* Общие стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+.container.settlement-list {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 24px 32px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+}
+
+/* Заголовок */
+.container.settlement-list h1 {
+    font-size: 28px;
+    margin-bottom: 24px;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+/* Таблица */
+#settlementListContainer table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#settlementListContainer th,
+#settlementListContainer td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 15px;
+}
+
+#settlementListContainer th {
+    background-color: #2980b9;
+    color: white;
+    font-weight: 600;
+}
+
+/* Скругления углов */
+#settlementListContainer table thead tr th:first-child {
+    border-top-left-radius: 12px;
+}
+
+#settlementListContainer table thead tr th:last-child {
+    border-top-right-radius: 12px;
+}
+
+#settlementListContainer table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 12px;
+}
+
+#settlementListContainer table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 12px;
+}
+
+/* Наведение на строку */
+#settlementListContainer tbody tr:hover {
+    background-color: #f1f9ff;
+}
+
+/* Кнопки */
+button.approve-btn,
+button.reject-btn {
+    padding: 6px 12px;
+    margin-right: 6px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: white;
+}
+
+button.approve-btn {
+    background-color: #27ae60;
+}
+
+button.approve-btn:hover {
+    background-color: #1e8449;
+}
+
+button.reject-btn {
+    background-color: #e74c3c;
+}
+
+button.reject-btn:hover {
+    background-color: #c0392b;
+}

@@ -277,7 +277,7 @@ async function showStudentInfo() {
 const btnRepair = document.getElementById('btnRepair');
 const btnInfStudent = document.getElementById('btnInfStudent');
 const btnPayment = document.getElementById('btnPayment');
-const btnSettlement = document.getElementById('btnSettlement');
+const btnSettlement = document.getElementById('btnSettlementList');
 
 const buttons = [btnRepair, btnInfStudent, btnPayment, btnSettlement];
 
@@ -312,7 +312,7 @@ buttons.forEach(btn => {
 
     if (!isOpen) {
       switch (id) {
-        case 'btnSettlement':
+        case 'btnSettlementList':
           await showSettlementForm();
           break;
         case 'btnRepair':
